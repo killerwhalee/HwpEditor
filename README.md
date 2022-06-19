@@ -74,39 +74,10 @@ Regardless of instruction type, every data is interpreted since only valid data 
   - Value is **one** when instruction is **I-type**.
   - Value is **two** when instruction is **J-type** or it's **jr** instruction.
 
-### 4. EX_MEM_latch
+## CheckList
 
-Regardless of instruction type, every data is operated(e.g. branch target). But only valid and appropriate data will be selected.
-
-- `EX_MEM_NPC` saves `NPC` value from **ID_EX_latch**.
-- `EX_MEM_ALU_OUT` saves output value from **ALU**.
-- `EX_MEM_BR_TARGET` saves target branch address calculated from immediate value in branch operation.
-- `EX_MEM_BR_TAKE` saves whether branch operation is **TRUE**. This data is transferred to turn on the `BR_SIGNAL`.
-- `EX_MEM_TAKE` saves read/write option for MEM stage.
-  - Value is **zero** for default.
-  - Value is **one** for lw operation.
-  - Value is **two** for sw operation.
-- `EX_MEM_REGLOCK` saves **Lock State** of WB. If `REGLOCK` is true, WB would not write data to register.
-- `EX_MEM_DEST` saves `DEST` value from **ID_EX_latch**.
-- `EX_MEM_TYPE_FLAG` saves `TYPE_FLAG` value from **ID_EX_latch**.
-- `EX_MEM_JUMP_SIGNAL` saves when instruction is **jr**.
-
-### 5. MEM_WB_latch
-
-- `MEM_WB_NPC` saves `NPC` value from **EX_MEM_latch**.
-- `MEM_WB_ALU_OUT` saves `ALU_OUT` value from **EX_MEM_latch**.
-- `MEM_WB_MEM_OUT` saves data from **Memory** refer to `ALU_OUT`.
-- `MEM_WB_TAKE` saves `TYPE_FLAG` value from **EX_MEM_latch**.
-- `MEM_WB_REGLOCK` saves `REGLOCK` value from **EX_MEM_latch**.
-- `MEM_WB_DEST` saves `DEST` value from **EX_MEM_latch**.
-- `MEM_WB_TYPE_FLAG` saves `TYPE_FLAG` value from **EX_MEM_latch**.
-- `MEM_WB_JUMP_SIGNAL` saves `JUMP_SIGNAL` value from **EX_MEM_latch**.
-
-### 6. Forwarding
-
-There exists **four** fields for forwarding.
-
-- `EX_MEM_FORWARD_REG` saves **rd** register number at `EX_MEM` stage.
-- `EX_MEM_FORWARD_VALUE` saves data saved in **rd** register number at `EX_MEM` stage.
-- `MEM_WB_FORWARD_REG` saves **rd** register number at `MEM_WB` stage.
-- `MEM_WB_FORWARD_VALUE` saves data saved in **rd** register number at `MEM_WB` stage.
+- Get familiar with github
+- Select language to develop -> python?
+- Make target feature -> hml parser/error checker/...etc
+- Select role -> Parser function/API setting/...etc
+- +add checklist you want
