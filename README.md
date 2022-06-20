@@ -1,6 +1,6 @@
 # Editor.hwp
 
-EDITOR.HWP by CHAEMIN LIM && JUNHYUK YU
+EDITOR.HWP by CHAEMIN LIM && JUNHYEOK YOO
 
 ## Introduction
 
