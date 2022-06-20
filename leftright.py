@@ -16,10 +16,33 @@ LEFT RIGHT 괄호를 쓰는 경우와 쓰지 않는 경우를 철저히 구분�
 
 함수는 간단하게 
 
--LEFT RIGHT 판별 함수
+-LEFT RIGHT 존재 판별 함수
+-LEFT RIGHT 가능/불가능 판별 함수
 -LEFT RIGHT 추가 함수 
 -LEFT RIGHT 제거 함수
 
-이렇게 3가지로 나눌 것이다.
+이렇게 4가지로 나눌 것이다.
 
 """
+
+def isLeftRightIn(string):
+    """
+    LEFT RIGHT가 안에 있는지 확인한다
+    """
+
+
+def isLeftRight(string):
+    """
+    LEFT RIGHT가 가능한지 불가능한지 판별한다.
+    """
+
+
+def delLeftRight(string):
+    """
+    LEFT RIGHT를 제거한다.
+    """
+
+def addLeftRight(string):
+    """
+    LEFT RIGHT를 추가한다.
+    """
