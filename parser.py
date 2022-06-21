@@ -1,5 +1,7 @@
 import os
-import xml
+import xml.etree.ElementTree as xml
+
+#--------- HELPER CLASS ---------#
 
 class DocSetting:
     def __init__(self):
@@ -20,9 +22,23 @@ class CompDoc:
     def __init__(self):
         self.layoutCompatibility = {}
 
+class Node:     # Node is for unimportant tag
+    def __init__(self):
+        self.name       = None
+        self.attriute   = {}
+
 class Text:
     def __init__(self):
-        pass
+        self.type = None
+        self.setting = {}
+        self.string = ""
+
+class Paragraph:
+    def __init__(self):
+        self.attribute  = {}
+        self.paraElem   = []    # Has element of Text.
+
+#---------  MAIN  CLASS ---------#
 
 class HML:
     """
@@ -46,9 +62,11 @@ class HML:
 
         # For Body Data
         self.section = None
-        
+        self.paraList = []  # This is list of paragraphs, where Paragraph is element of list.
+
 
         # For Tail Data
+        self.tailString = ""    # We do not provide tail parsing yet.
 
         self.parseFile(src)
     
@@ -64,7 +82,18 @@ class HML:
                 hmlString += line.strip()
 
         # Parse string and save in HWPObject
-        # Implement here #
+        hmlTree = xml.fromstring(hmlString)
+
+        # Interpreting Head part
+
+        # Interpreting Body part
+
+        # Interpreting Tail part
+    
+    def tokenize(self, src):
+        """
+        tokenize..wait for it
+        """
 
 
     def getElement(self, location):
@@ -88,6 +117,6 @@ class HML:
 
         pass
 
-# Start module
+#--------- START MODULE ---------#
 if __name__ == "__main__":
-    hell = HML(None) # Enter your file location here
+    hell = HML(r"C:\Users\jacob\Desktop\test.hml") # Enter your file location here
