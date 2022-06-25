@@ -3,40 +3,11 @@ import xml.etree.ElementTree as xml
 
 #--------- HELPER CLASS ---------#
 
-class DocSetting:
-    def __init__(self):
-        self.beginNumber    = {}
-        self.caretPos       = {}
-
-class MapTable:
-    def __init__(self):
-        self.binDataList    = []
-        self.faceNameList   = []
-        self.borderFillList = []
-        self.charShapeList  = []
-        self.tabDefList     = []
-        self.paraShapeList  = []
-        self.styleList      = []
-
-class CompDoc:
-    def __init__(self):
-        self.layoutCompatibility = {}
-
-class Node:     # Node is for unimportant tag
-    def __init__(self):
-        self.name       = None
-        self.attriute   = {}
-
 class Text:
     def __init__(self):
         self.type = None
         self.setting = {}
         self.string = ""
-
-class Paragraph:
-    def __init__(self):
-        self.attribute  = {}
-        self.paraElem   = []    # Has element of Text.
 
 #---------  MAIN  CLASS ---------#
 
@@ -52,27 +23,29 @@ class HML:
         Initiate HWP object
         """
 
+        # Initiate Basic Variable
         self.xmlString = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>'
+        self.hmlTree = xml.Element
 
-        # For Head Data
-        self.docSummary         = {}
-        self.docSetting         = DocSetting()
-        self.mappingTable       = MapTable()
-        self.compatibleDocument = CompDoc()
+        # Initiate Head Data
+        self.textList = []
 
-        # For Body Data
-        self.section = None
-        self.paraList = []  # This is list of paragraphs, where Paragraph is element of list.
-
-
-        # For Tail Data
-        self.tailString = ""    # We do not provide tail parsing yet.
+        # Initiate Body Data
 
         self.parseFile(src)
+
+    def iterTree(self):
+        self.iterTree(self.hmlTree, 0)
     
+    def iterTree(self, tree, depth):
+        print("\t" * depth, tree.tag, tree.attrib, tree.text)
+
+        for child in tree:
+            self.iterTree(child, depth = depth + 1)
+
     def parseFile(self, src):
         """
-        parseFile - Parsing hml file into HWP object.
+        parseFile - Parsing hml file into xml.Element object
         """
         
         # Concatenate every line in hml file
@@ -81,31 +54,41 @@ class HML:
             for line in file:
                 hmlString += line.strip()
 
+        # <FWSPACE/> tag is special tag which treated as string.
+        # To prevent parser to parse this tag, masking the tag before parsing.
+        # <FWSPACE/> -> |FS| -> <FWSPACE/>
         # Parse string and save in HWPObject
-        hmlTree = xml.fromstring(hmlString)
+        self.hmlTree = xml.fromstring(hmlString.replace("<FWSPACE/>", "|FS|"))
 
-        # Interpreting Head part
-
-        # Interpreting Body part
-
-        # Interpreting Tail part
-    
-    def tokenize(self, src):
+    def getText(self):
         """
-        tokenize..wait for it
+        Get text from HML object
         """
+        for paraElem in self.hmlTree.iter("P"):
+            notNone = False
 
+            for textElem in paraElem.iter("TEXT"):
+                for element in textElem:
+                    if element.tag == "CHAR" and element.text != None:
+                        print(element.text, end = "")
+                        notNone = True
+                    if element.tag == "EQUATION":
+                        print(f"##{element.find('SCRIPT').text}##", end = "")
+                        notNone = True
+            
+            if notNone:
+                print("")
 
-    def getElement(self, location):
+    def addElement(self, location, value):
         """
-        Get element from HWP object
+        Get element at HML object
         """
 
         pass
 
     def setElement(self, location, value):
         """
-        Set element at HWP object
+        Set element at HML object
         """
 
         pass
@@ -119,4 +102,5 @@ class HML:
 
 #--------- START MODULE ---------#
 if __name__ == "__main__":
-    hell = HML(r"C:\Users\jacob\Desktop\test.hml") # Enter your file location here
+    hell = HML("test_article.hml") # Enter your file location here
+    hell.getText()
