@@ -63,7 +63,7 @@ class HML:
                         self.textStrList.append(Text(type = "CHAR", string = element.text))
                         notNone = True
                     if element.tag == "EQUATION":
-                        self.textStrList.append(Text(type = "EQUATION", string = f"##{element.find('SCRIPT').text}##"))
+                        self.textStrList.append(Text(type = "EQUATION", string = f"{element.find('SCRIPT').text}"))
                         notNone = True
             
             if notNone:
@@ -76,6 +76,8 @@ class HML:
         outputStr = ""
 
         for text in self.textStrList:
+            if text.type == "EQUATION":
+                outputStr += f"<{text.string}>"
             outputStr += text.string
 
         return outputStr
