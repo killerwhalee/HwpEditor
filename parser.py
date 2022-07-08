@@ -1,13 +1,12 @@
-import os
 import xml.etree.ElementTree as xml
 
 #--------- HELPER CLASS ---------#
 
 class Text:
-    def __init__(self):
-        self.type = None
-        self.setting = {}
-        self.string = ""
+    def __init__(self, type = None, style = {}, string = ""):
+        self.type = type
+        self.style = style
+        self.string = string
 
 #---------  MAIN  CLASS ---------#
 
@@ -27,21 +26,14 @@ class HML:
         self.xmlString = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>'
         self.hmlTree = xml.Element
 
-        # Initiate Head Data
-        self.textList = []
+        # Initiate Text Data
+        self.textStrList = []
 
-        # Initiate Body Data
+        # Initiate Head Data
+        self.fontData = []
+        self.styleData = []
 
         self.parseFile(src)
-
-    def iterTree(self):
-        self.iterTree(self.hmlTree, 0)
-    
-    def iterTree(self, tree, depth):
-        print("\t" * depth, tree.tag, tree.attrib, tree.text)
-
-        for child in tree:
-            self.iterTree(child, depth = depth + 1)
 
     def parseFile(self, src):
         """
@@ -60,24 +52,44 @@ class HML:
         # Parse string and save in HWPObject
         self.hmlTree = xml.fromstring(hmlString.replace("<FWSPACE/>", "|FS|"))
 
-    def getText(self):
-        """
-        Get text from HML object
-        """
+
+        # Make textStrList
         for paraElem in self.hmlTree.iter("P"):
             notNone = False
 
             for textElem in paraElem.iter("TEXT"):
                 for element in textElem:
                     if element.tag == "CHAR" and element.text != None:
-                        print(element.text, end = "")
+                        self.textStrList.append(Text(type = "CHAR", string = element.text))
                         notNone = True
                     if element.tag == "EQUATION":
-                        print(f"##{element.find('SCRIPT').text}##", end = "")
+                        self.textStrList.append(Text(type = "EQUATION", string = f"##{element.find('SCRIPT').text}##"))
                         notNone = True
             
             if notNone:
-                print("")
+                self.textStrList.append(Text(type = "LINEBREAK", string = "\n"))
+
+    def getText(self):
+        """
+        Get text from HML object
+        """
+        outputStr = ""
+
+        for text in self.textStrList:
+            outputStr += text.string
+
+        return outputStr
+    
+    def getTextList(self):
+        """
+        Get text list from HML object
+        """
+        outputStrList = []
+
+        for text in self.textStrList:
+            outputStrList.append(text.string)
+
+        return outputStrList
 
     def addElement(self, location, value):
         """
@@ -103,4 +115,5 @@ class HML:
 #--------- START MODULE ---------#
 if __name__ == "__main__":
     hell = HML("test_article.hml") # Enter your file location here
-    hell.getText()
+    print(hell.getTextList())
+    print(hell.getText())
