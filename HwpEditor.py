@@ -3,7 +3,7 @@ import xml.etree.ElementTree as xml
 #--------- HELPER CLASS ---------#
 
 class Text:
-    def __init__(self, type = None, style = {}, string = ""):
+    def __init__(self, type = None, style = None, string = ""):
         self.type = type
         self.style = style
         self.string = string
@@ -30,8 +30,9 @@ class HML:
         self.textStrList = []
 
         # Initiate Head Data
-        self.fontData = []
-        self.styleData = []
+        self.fontData = {"Hangul": [], "Latin": [], "Hanja": [], "Japanese": [], "Other": [], "Symbol": [], "User": []}
+        self.charshapeData = []
+        self.parashapeData = []
 
         self.parseFile(src)
 
@@ -53,6 +54,14 @@ class HML:
         self.hmlTree = xml.fromstring(hmlString.replace("<FWSPACE/>", "|FS|"))
 
 
+        # Make fontData
+        for fontfaceElem in self.hmlTree.iter("FONTFACE"):
+            for fontElem in fontfaceElem.iter("FONT"):
+                self.fontData[fontfaceElem.attrib["Lang"]].append((fontElem.attrib["Name"], fontElem.attrib["Type"]))
+
+        # Make charShapeData
+
+
         # Make textStrList
         for paraElem in self.hmlTree.iter("P"):
             notNone = False
@@ -69,7 +78,7 @@ class HML:
             if notNone:
                 self.textStrList.append(Text(type = "LINEBREAK", string = "\n"))
 
-    def getText(self):
+    def getText(self) -> str:
         """
         Get text from HML object
         """
@@ -78,7 +87,9 @@ class HML:
         for text in self.textStrList:
             if text.type == "EQUATION":
                 outputStr += f"<{text.string}>"
-            outputStr += text.string
+            
+            else:
+                outputStr += text.string
 
         return outputStr
     
@@ -106,16 +117,26 @@ class HML:
         """
 
         pass
+    
 
-    def __str__(self):
+    def iterTree(self, tree, depth = 0):
         """
-        Print information of HML object
+        Print tabbed result of hml file.
         """
+        tabStr = '\t' * depth
+        string = f"{tabStr}{tree.tag} {tree.attrib} {tree.text}\n"
 
-        pass
+        for child in tree:
+            string += self.iterTree(child, depth + 1)
+        
+        return string
 
 #--------- START MODULE ---------#
 if __name__ == "__main__":
-    hell = HML("test_article.hml") # Enter your file location here
-    print(hell.getTextList())
-    print(hell.getText())
+    hell = HML("Tests/test_owldoc.hml") # Enter your file location here
+    
+    fire = hell.iterTree(hell.hmlTree)
+    with open('parsedHML.txt', 'w', encoding = 'UTF-8') as tell:
+        tell.write(fire)
+    #print(hell.getTextList())
+    #print(hell.getText())
