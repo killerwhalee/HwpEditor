@@ -31,5 +31,5 @@ To achieve this, we know that we have to pour more energy to this "Big Toy" proj
 
 If you have problem using HwpEditor or want to suggest great idea, feel free to contact us.
 
-CHAEMIN LIM : killerwhalee@kaist.ac.kr
-JUNHYEOK YOO : his-email@is-empty.now
+- CHAEMIN LIM : killerwhalee@kaist.ac.kr
+- JUNHYEOK YOO : his-email@is-empty.now
