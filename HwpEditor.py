@@ -26,11 +26,15 @@ class EQTN:
 
 class CharShape:
     def __init__(self):
-        self.languageShape = {}
         self.property = {}
+        self.attribute = {}
         self.fancy = []
 
 class ParaShape:
+    def __init__(self):
+        self.property = {}
+        self.attribute = {}
+        self.fancy = []
     pass
 
 #---------  MAIN  CLASS ---------#
@@ -59,8 +63,8 @@ class HML:
             "Hangul": [], "Latin": [], "Hanja": [], 
             "Japanese": [], "Other": [], "Symbol": [], "User": []
             }
-        self.charShapeList = [None]
-        self.paraShapeList = [None]
+        self.charShapeList = []
+        self.paraShapeList = []
 
         self.parseFile(src)
 
@@ -93,22 +97,25 @@ class HML:
                 charShape = CharShape()
 
                 for child in charShapeElem:
-                    charShape.languageShape[child.tag] = hwphelp.getLangIdList(child.attrib)
+                    charShape.property[child.tag] = hwphelp.getLangIdList(child.attrib)
 
                 for key in charShapeElem.attrib:
                     if key == "Id":
                         continue
 
-                    charShape.property[key] = hwphelp.interpAttribute(key, charShapeElem.attrib[key])
+                    charShape.attribute[key] = hwphelp.interpAttribute(key, charShapeElem.attrib[key])
 
                 self.charShapeList.append(charShape)
-        
-        for elem in self.charShapeList:
-            if elem:
-                print(elem.languageShape, elem.property)
 
         # Make paraShapeData
+        for paraShapeList in self.hmlTree.iter("PARASHAPELIST"):
+            for paraShapeElem in paraShapeList:
+                paraShape = ParaShape()
+
+                for child in paraShapeElem:
+                    paraShape.property[child.tag] = None
         
+
 
         # Make textStrList
         for paraElem in self.hmlTree.iter("P"):
