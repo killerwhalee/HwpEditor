@@ -1,12 +1,51 @@
 import xml.etree.ElementTree as xml
+import HwpHelper as hwphelp
 
 #--------- HELPER CLASS ---------#
 
-class Text:
-    def __init__(self, type = None, style = None, string = ""):
+class CHAR:
+    def __init__(self, type = None, paraShape = None, charShape = None, string = ""):
         self.type = type
-        self.style = style
+        self.paraShape = paraShape
+        self.charShape = charShape
         self.string = string
+
+class EQTN:
+    def __init__(self, paraShape = None, charShape = None, string = ""):
+        self.type = "EQUATION"
+        self.paraShape = paraShape
+        self.charShape = charShape
+        self.shapeProperty = {}
+        self.string = string
+    
+    def calcWidth(self):
+        """
+        calcWidth calculates and return width of equation.
+        """
+        pass
+
+class CharShape:
+    def __init__(self):
+        self.languageShape = {
+            "fontId" : [0, 0, 0, 0, 0, 0, 0], 
+            "ratio" : [100, 100, 100, 100, 100, 100, 100], 
+            "charSpacing" : [0, 0, 0, 0, 0, 0, 0], 
+            "relSize" : [100, 100, 100, 100, 100, 100, 100], 
+            "charOffset" : [0, 0, 0, 0, 0, 0, 0]
+        }
+        self.property = {
+            "borderFillId" : 0, 
+            "height" : 0,
+            "shadeColor" : 0, 
+            "symbolMark" : 0, 
+            "textColor" : 0, 
+            "useFontSpace" : False, 
+            "useKerning" : False
+        }
+        self.fancy = []
+
+class ParaShape:
+    pass
 
 #---------  MAIN  CLASS ---------#
 
@@ -30,9 +69,12 @@ class HML:
         self.textStrList = []
 
         # Initiate Head Data
-        self.fontData = {"Hangul": [], "Latin": [], "Hanja": [], "Japanese": [], "Other": [], "Symbol": [], "User": []}
-        self.charshapeData = []
-        self.parashapeData = []
+        self.fontData = {
+            "Hangul": [], "Latin": [], "Hanja": [], 
+            "Japanese": [], "Other": [], "Symbol": [], "User": []
+            }
+        self.charShapeList = [None]
+        self.paraShapeList = [None]
 
         self.parseFile(src)
 
@@ -60,6 +102,45 @@ class HML:
                 self.fontData[fontfaceElem.attrib["Lang"]].append((fontElem.attrib["Name"], fontElem.attrib["Type"]))
 
         # Make charShapeData
+        for charShapeList in self.hmlTree.iter("CHARSHAPELIST"):
+            for charShapeElem in charShapeList:
+                charShape = CharShape()
+
+                childMap = {
+                    "FONTID" : "fontId", 
+                    "RATIO" : "ratio", 
+                    "CHARSPACING" : "charSpacing", 
+                    "RELSIZE" : "relSize", 
+                    "CHAROFFSET" : "charOffset"
+                }
+
+                attribMap = {
+                    "BorderFillId" : "borderFillId", 
+                    "Height" : "height", 
+                    "ShadeColor" : "shadeColor", 
+                    "SymMark" : "symbolMark", 
+                    "TextColor" : "textColor", 
+                    "UseFontSpace" : "useFontSpace", 
+                    "UseKerning" : "useKerning"
+                }
+
+                for child in charShapeElem:
+                    charShape.languageShape[childMap[child.tag]] = hwphelp.getLangIdList(child.attrib)
+
+                for key in charShapeElem.attrib:
+                    if key == "Id":
+                        continue
+
+                    charShape.property[attribMap[key]] = hwphelp.interpAttribute(attribMap[key], charShapeElem.attrib[key])
+
+                self.charShapeList.append(charShape)
+        
+        for elem in self.charShapeList:
+            if elem:
+                print(elem.languageShape, elem.property)
+
+
+        # Make paraShapeData
 
 
         # Make textStrList
@@ -69,14 +150,14 @@ class HML:
             for textElem in paraElem.iter("TEXT"):
                 for element in textElem:
                     if element.tag == "CHAR" and element.text != None:
-                        self.textStrList.append(Text(type = "CHAR", string = element.text))
+                        self.textStrList.append(CHAR(type = "CHAR", string = element.text))
                         notNone = True
                     if element.tag == "EQUATION":
-                        self.textStrList.append(Text(type = "EQUATION", string = f"{element.find('SCRIPT').text}"))
+                        self.textStrList.append(EQTN(string = f"{element.find('SCRIPT').text}"))
                         notNone = True
             
             if notNone:
-                self.textStrList.append(Text(type = "LINEBREAK", string = "\n"))
+                self.textStrList.append(CHAR(type = "LINEBREAK", string = "\n"))
 
     def getText(self) -> str:
         """
@@ -133,10 +214,11 @@ class HML:
 
 #--------- START MODULE ---------#
 if __name__ == "__main__":
-    hell = HML("Tests/test_owldoc.hml") # Enter your file location here
+    rootDir = "./Repository/Editor.hwp"
+    hell = HML(f"{rootDir}/Tests/test_textcolor.hml") # Enter your file location here
     
     fire = hell.iterTree(hell.hmlTree)
-    with open('parsedHML.txt', 'w', encoding = 'UTF-8') as tell:
+    with open(f"{rootDir}/Resources/parsedHML.txt", "w", encoding = "UTF-8") as tell:
         tell.write(fire)
     #print(hell.getTextList())
     #print(hell.getText())
