@@ -26,22 +26,8 @@ class EQTN:
 
 class CharShape:
     def __init__(self):
-        self.languageShape = {
-            "fontId" : [0, 0, 0, 0, 0, 0, 0], 
-            "ratio" : [100, 100, 100, 100, 100, 100, 100], 
-            "charSpacing" : [0, 0, 0, 0, 0, 0, 0], 
-            "relSize" : [100, 100, 100, 100, 100, 100, 100], 
-            "charOffset" : [0, 0, 0, 0, 0, 0, 0]
-        }
-        self.property = {
-            "borderFillId" : 0, 
-            "height" : 0,
-            "shadeColor" : 0, 
-            "symbolMark" : 0, 
-            "textColor" : 0, 
-            "useFontSpace" : False, 
-            "useKerning" : False
-        }
+        self.languageShape = {}
+        self.property = {}
         self.fancy = []
 
 class ParaShape:
@@ -106,32 +92,14 @@ class HML:
             for charShapeElem in charShapeList:
                 charShape = CharShape()
 
-                childMap = {
-                    "FONTID" : "fontId", 
-                    "RATIO" : "ratio", 
-                    "CHARSPACING" : "charSpacing", 
-                    "RELSIZE" : "relSize", 
-                    "CHAROFFSET" : "charOffset"
-                }
-
-                attribMap = {
-                    "BorderFillId" : "borderFillId", 
-                    "Height" : "height", 
-                    "ShadeColor" : "shadeColor", 
-                    "SymMark" : "symbolMark", 
-                    "TextColor" : "textColor", 
-                    "UseFontSpace" : "useFontSpace", 
-                    "UseKerning" : "useKerning"
-                }
-
                 for child in charShapeElem:
-                    charShape.languageShape[childMap[child.tag]] = hwphelp.getLangIdList(child.attrib)
+                    charShape.languageShape[child.tag] = hwphelp.getLangIdList(child.attrib)
 
                 for key in charShapeElem.attrib:
                     if key == "Id":
                         continue
 
-                    charShape.property[attribMap[key]] = hwphelp.interpAttribute(attribMap[key], charShapeElem.attrib[key])
+                    charShape.property[key] = hwphelp.interpAttribute(key, charShapeElem.attrib[key])
 
                 self.charShapeList.append(charShape)
         
@@ -139,9 +107,8 @@ class HML:
             if elem:
                 print(elem.languageShape, elem.property)
 
-
         # Make paraShapeData
-
+        
 
         # Make textStrList
         for paraElem in self.hmlTree.iter("P"):
@@ -159,7 +126,7 @@ class HML:
             if notNone:
                 self.textStrList.append(CHAR(type = "LINEBREAK", string = "\n"))
 
-    def getText(self) -> str:
+    def getText(self):
         """
         Get text from HML object
         """
@@ -214,7 +181,7 @@ class HML:
 
 #--------- START MODULE ---------#
 if __name__ == "__main__":
-    rootDir = "./Repository/Editor.hwp"
+    rootDir = "./Repository/HwpEditor"
     hell = HML(f"{rootDir}/Tests/test_textcolor.hml") # Enter your file location here
     
     fire = hell.iterTree(hell.hmlTree)

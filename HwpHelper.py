@@ -29,18 +29,18 @@ def interpAttribute(type, data):
     """
 
     # (str) -> (int)
-    if type in ["borderFillId", "symbolMark"]:
+    if type in ["BorderFillId", "SymMark"]:
         return int(data)
     
     # (str) -> (bool)
-    if type in ["useFontSpace", "useKerning"]:
+    if type in ["UseFontSpace", "UseKerning"]:
         if data == "true":
             return True
         if data == "false":
             return False
     
     # (str) -> (HexColor)
-    if type in ["shadeColor", "textColor"]:
+    if type in ["ShadeColor", "TextColor"]:
         decData = int(data)
         hexColor = [0, 0, 0, 0]
 
@@ -51,4 +51,4 @@ def interpAttribute(type, data):
         return hexColor
 
 if __name__ == "__main__":
-    print(interpAttribute("shadeColor", "5395143"))
+    print(interpAttribute("ShadeColor", "5395143"))
