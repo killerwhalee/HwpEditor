@@ -189,7 +189,8 @@ class HML:
 #--------- START MODULE ---------#
 if __name__ == "__main__":
     rootDir = "./Repository/HwpEditor"
-    hell = HML(f"{rootDir}/Tests/test_textcolor.hml") # Enter your file location here
+    testname = input("ENTER TEST CASENAME : ")
+    hell = HML(f"{rootDir}/Tests/test_{testname}.hml") # Enter your file location here
     
     fire = hell.iterTree(hell.hmlTree)
     with open(f"{rootDir}/Resources/parsedHML.txt", "w", encoding = "UTF-8") as tell:
